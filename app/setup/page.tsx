@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Zap, Key, ExternalLink, Loader2, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Key, ExternalLink, Loader2, CheckCircle2, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
 import toast from 'react-hot-toast'
 
 export default function SetupPage() {
@@ -51,9 +52,7 @@ export default function SetupPage() {
         {/* Logo + Step */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
+            <Image src="/logo.svg" alt="ContentFlow" width={40} height={40} className="rounded-xl shadow-lg shadow-purple-500/30" />
             <span className="font-bold text-xl tracking-tight">ContentFlow</span>
           </div>
           <div className="flex items-center justify-center gap-2 mb-4">

@@ -3,8 +3,9 @@
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Zap, Loader2, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Loader2, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import toast from 'react-hot-toast'
 
 type Mode = 'login' | 'register'
@@ -77,9 +78,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
+            <Image src="/logo.svg" alt="ContentFlow" width={40} height={40} className="rounded-xl shadow-lg shadow-purple-500/30" />
             <span className="font-bold text-xl tracking-tight">ContentFlow</span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">

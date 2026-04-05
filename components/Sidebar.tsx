@@ -10,8 +10,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Zap,
 } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 const nav = [
@@ -30,9 +30,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-6 py-5 border-b border-white/[0.06]">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <Zap className="w-4 h-4 text-white" />
-          </div>
+          <Image src="/logo.svg" alt="ContentFlow" width={32} height={32} className="rounded-lg shadow-lg shadow-purple-500/30" />
           <span className="font-bold text-base tracking-tight">ContentFlow</span>
         </Link>
       </div>
