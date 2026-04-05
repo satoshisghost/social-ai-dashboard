@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { Settings, User, Key, Bell } from 'lucide-react'
 import Image from 'next/image'
+import DeleteAccountButton from '@/components/DeleteAccountButton'
 
 export default async function SettingsPage() {
   const session = await auth()
@@ -63,13 +64,20 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      {/* Notification Placeholder */}
+      {/* Notifications */}
       <div className="glass-card p-6">
         <h2 className="font-semibold mb-4 flex items-center gap-2">
           <Bell className="w-4 h-4 text-yellow-400" />
           Notifications
         </h2>
         <p className="text-white/40 text-sm">Email notifications and webhook integrations — coming soon.</p>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="glass-card p-6 border border-red-500/20">
+        <h2 className="font-semibold mb-2 text-red-400">Danger Zone</h2>
+        <p className="text-white/40 text-sm mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
+        <DeleteAccountButton />
       </div>
     </div>
   )
