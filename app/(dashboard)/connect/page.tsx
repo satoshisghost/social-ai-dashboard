@@ -29,26 +29,15 @@ const platforms = [
     docsUrl: 'https://developer.x.com',
   },
   {
-    id: 'instagram',
-    provider: 'instagram',
-    name: 'Instagram',
-    handle: 'Meta / Instagram',
-    description: 'Connect your Instagram Business account to post content, stories, and track followers.',
-    icon: '📸',
-    gradient: 'from-[#F58529] via-[#DD2A7B] to-[#8134AF]',
-    scopes: ['Post Content', 'View Insights', 'Manage Stories'],
+    id: 'facebook',
+    provider: 'facebook',
+    name: 'Facebook & Instagram',
+    handle: 'Meta / Facebook Login',
+    description: 'Connect your Facebook account to manage Pages, Instagram Business accounts, and view insights.',
+    icon: '📘',
+    gradient: 'from-[#1877F2] to-[#0a5fce]',
+    scopes: ['Pages Access', 'Instagram Access', 'View Insights'],
     docsUrl: 'https://developers.facebook.com',
-  },
-  {
-    id: 'tiktok',
-    provider: 'tiktok',
-    name: 'TikTok',
-    handle: 'TikTok for Developers',
-    description: 'Connect your TikTok account to upload videos, view analytics, and manage your profile.',
-    icon: '🎵',
-    gradient: 'from-[#010101] to-[#69C9D0]',
-    scopes: ['Upload Videos', 'View Analytics', 'Profile Info'],
-    docsUrl: 'https://developers.tiktok.com',
   },
 ]
 
@@ -164,9 +153,8 @@ export default function ConnectPage() {
             <strong>Callback URLs to add in your developer apps:</strong><br />
             <code className="text-yellow-200/80">
               {'{YOUR_DOMAIN}'}/api/auth/callback/google<br />
-              {'{YOUR_DOMAIN}'}/api/auth/callback/twitter<br />
-              {'{YOUR_DOMAIN}'}/api/auth/callback/instagram<br />
-              {'{YOUR_DOMAIN}'}/api/auth/callback/tiktok
+              {'{YOUR_DOMAIN}'}/api/auth/callback/facebook<br />
+              {'{YOUR_DOMAIN}'}/api/auth/callback/twitter
             </code>
           </p>
         </div>
