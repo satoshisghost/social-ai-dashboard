@@ -1,9 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
-
 export type Platform = 'instagram' | 'tiktok' | 'x' | 'youtube'
 export type ContentType = 'post' | 'caption' | 'script' | 'blog' | 'tweet'
 
@@ -17,18 +13,24 @@ const platformInstructions: Record<Platform, string> = {
     'Write for YouTube. Create an engaging video script with a strong hook in the first 10 seconds. Structure: Hook → Content → Call to Action. Include suggested tags.',
 }
 
+function getClient(apiKey: string) {
+  return new Anthropic({ apiKey })
+}
+
 export async function generateContent({
   platform,
   type,
   topic,
   tone = 'professional',
   audience = 'general',
+  apiKey,
 }: {
   platform: Platform
   type: ContentType
   topic: string
   tone?: string
   audience?: string
+  apiKey: string
 }): Promise<string> {
   const systemPrompt = `You are an expert social media content creator specialising in ${platform} content.
 ${platformInstructions[platform]}
@@ -36,7 +38,7 @@ Tone: ${tone}
 Target audience: ${audience}
 Always return clean, ready-to-post content with no extra commentary.`
 
-  const response = await anthropic.messages.create({
+  const response = await getClient(apiKey).messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 1024,
     system: systemPrompt,
@@ -47,8 +49,8 @@ Always return clean, ready-to-post content with no extra commentary.`
   return block.type === 'text' ? block.text : ''
 }
 
-export async function generateImagePrompt(topic: string, platform: Platform): Promise<string> {
-  const response = await anthropic.messages.create({
+export async function generateImagePrompt(topic: string, platform: Platform, apiKey: string): Promise<string> {
+  const response = await getClient(apiKey).messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 256,
     messages: [

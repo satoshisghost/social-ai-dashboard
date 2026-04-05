@@ -1,10 +1,18 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
 import Sidebar from '@/components/Sidebar'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session?.user) redirect('/login')
+
+  // Redirect to setup if no API key configured (skip for /setup itself)
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { anthropicApiKey: true },
+  })
+  if (!user?.anthropicApiKey) redirect('/setup')
 
   return (
     <div className="min-h-screen bg-[#07071A] flex">
