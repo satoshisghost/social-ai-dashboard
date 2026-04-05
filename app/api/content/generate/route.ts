@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth'
-import { generateContent, generateImage, type Platform, type ContentType } from '@/lib/openai'
+import { generateContent, generateImagePrompt, type Platform, type ContentType } from '@/lib/claude'
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
@@ -15,9 +15,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  const [body, imageUrl] = await Promise.all([
+  // Generate content and optionally an image prompt — in parallel
+  const [body, imgPrompt] = await Promise.all([
     generateContent({ platform: platform as Platform, type: type as ContentType, topic, tone, audience }),
-    generateImg ? generateImage(`${topic} — ${platform} marketing visual, vibrant, professional`) : Promise.resolve(''),
+    generateImg ? generateImagePrompt(topic, platform as Platform) : Promise.resolve(''),
   ])
 
   const item = await db.contentItem.create({
@@ -26,11 +27,10 @@ export async function POST(req: Request) {
       socialAccountId: socialAccountId ?? null,
       type: type.toUpperCase() as 'POST',
       body,
-      imageUrl: imageUrl || null,
       prompt: topic,
       status: 'DRAFT',
     },
   })
 
-  return NextResponse.json({ body, imageUrl, id: item.id })
+  return NextResponse.json({ body, imagePrompt: imgPrompt, id: item.id })
 }

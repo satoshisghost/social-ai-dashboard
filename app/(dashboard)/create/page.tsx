@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Sparkles, Loader2, Copy, ImageIcon, RefreshCw, CheckCircle2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import Image from 'next/image'
 
 const platforms = [
   { id: 'instagram', name: 'Instagram', icon: '📸', color: 'from-[#F58529] via-[#DD2A7B] to-[#8134AF]' },
@@ -42,7 +41,7 @@ export default function CreatePage() {
   const [audience, setAudience] = useState('')
   const [generateImg, setGenerateImg] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<{ body: string; imageUrl?: string } | null>(null)
+  const [result, setResult] = useState<{ body: string; imagePrompt?: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
   async function generate() {
@@ -58,7 +57,7 @@ export default function CreatePage() {
       })
       if (!res.ok) throw new Error('Generation failed')
       const data = await res.json()
-      setResult(data)
+      setResult({ body: data.body, imagePrompt: data.imagePrompt })
       toast.success('Content generated!')
     } catch {
       toast.error('Generation failed. Check your OpenAI API key.')
@@ -188,9 +187,9 @@ export default function CreatePage() {
               <div>
                 <div className="text-sm font-medium flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-pink-400" />
-                  Generate Image (DALL-E 3)
+                  Generate Image Prompt (Claude)
                 </div>
-                <div className="text-xs text-white/40">~$0.04 per image</div>
+                <div className="text-xs text-white/40">AI-written prompt for any image tool</div>
               </div>
             </label>
           </div>
@@ -212,11 +211,13 @@ export default function CreatePage() {
         <div>
           {result ? (
             <div className="space-y-4">
-              {result.imageUrl && (
-                <div className="glass-card p-3 overflow-hidden">
-                  <div className="relative w-full aspect-square rounded-xl overflow-hidden">
-                    <Image src={result.imageUrl} alt="Generated" fill className="object-cover" />
+              {result.imagePrompt && (
+                <div className="glass-card p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ImageIcon className="w-4 h-4 text-pink-400" />
+                    <span className="text-xs font-medium text-white/60">Image Prompt (paste into Midjourney, DALL-E, etc.)</span>
                   </div>
+                  <p className="text-xs text-white/70 leading-relaxed italic">{result.imagePrompt}</p>
                 </div>
               )}
 

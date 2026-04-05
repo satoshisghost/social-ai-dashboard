@@ -43,7 +43,7 @@ export default async function SettingsPage() {
         </h2>
         <div className="space-y-3 text-sm">
           {[
-            { name: 'OpenAI API Key', env: 'OPENAI_API_KEY', desc: 'Powers content generation and image creation' },
+            { name: 'Anthropic API Key', env: 'ANTHROPIC_API_KEY', desc: 'Powers AI content generation via Claude Opus 4.6' },
             { name: 'Google Client ID', env: 'GOOGLE_CLIENT_ID', desc: 'YouTube OAuth authentication' },
             { name: 'Twitter Client ID', env: 'TWITTER_CLIENT_ID', desc: 'X (Twitter) OAuth authentication' },
             { name: 'Instagram Client ID', env: 'INSTAGRAM_CLIENT_ID', desc: 'Instagram OAuth authentication' },
