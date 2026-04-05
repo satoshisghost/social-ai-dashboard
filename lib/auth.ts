@@ -3,7 +3,9 @@ import type { Provider } from 'next-auth/providers'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import Google from 'next-auth/providers/google'
 import Twitter from 'next-auth/providers/twitter'
+import Credentials from 'next-auth/providers/credentials'
 import { db } from '@/lib/db'
+import bcrypt from 'bcryptjs'
 
 // Custom Instagram OAuth provider (Meta Graph API)
 const InstagramProvider = {
@@ -12,10 +14,7 @@ const InstagramProvider = {
   type: 'oauth' as const,
   authorization: {
     url: 'https://api.instagram.com/oauth/authorize',
-    params: {
-      scope: 'user_profile,user_media',
-      response_type: 'code',
-    },
+    params: { scope: 'user_profile,user_media', response_type: 'code' },
   },
   token: 'https://api.instagram.com/oauth/access_token',
   userinfo: {
@@ -23,12 +22,7 @@ const InstagramProvider = {
     params: { fields: 'id,username,account_type,profile_picture_url' },
   },
   profile(profile: { id: string; username: string; profile_picture_url?: string }) {
-    return {
-      id: profile.id,
-      name: profile.username,
-      email: null,
-      image: profile.profile_picture_url ?? null,
-    }
+    return { id: profile.id, name: profile.username, email: null, image: profile.profile_picture_url ?? null }
   },
   clientId: process.env.INSTAGRAM_CLIENT_ID,
   clientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
@@ -41,10 +35,7 @@ const TikTokProvider = {
   type: 'oauth' as const,
   authorization: {
     url: 'https://www.tiktok.com/v2/auth/authorize',
-    params: {
-      scope: 'user.info.basic,user.info.profile',
-      response_type: 'code',
-    },
+    params: { scope: 'user.info.basic,user.info.profile', response_type: 'code' },
   },
   token: 'https://open.tiktokapis.com/v2/oauth/token/',
   userinfo: {
@@ -53,12 +44,7 @@ const TikTokProvider = {
   },
   profile(profile: { data?: { user?: { open_id: string; display_name: string; avatar_url?: string } } }) {
     const user = profile?.data?.user
-    return {
-      id: user?.open_id ?? '',
-      name: user?.display_name ?? '',
-      email: null,
-      image: user?.avatar_url ?? null,
-    }
+    return { id: user?.open_id ?? '', name: user?.display_name ?? '', email: null, image: user?.avatar_url ?? null }
   },
   clientId: process.env.TIKTOK_CLIENT_ID,
   clientSecret: process.env.TIKTOK_CLIENT_SECRET,
@@ -74,12 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: [
-            'openid',
-            'email',
-            'profile',
-            'https://www.googleapis.com/auth/youtube.readonly',
-          ].join(' '),
+          scope: ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/youtube.readonly'].join(' '),
         },
       },
     }),
@@ -89,6 +70,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
     InstagramProvider as Provider,
     TikTokProvider as Provider,
+    Credentials({
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null
+        const user = await db.user.findUnique({
+          where: { email: credentials.email as string },
+          select: { id: true, email: true, name: true, image: true, password: true },
+        })
+        if (!user?.password) return null
+        const valid = await bcrypt.compare(credentials.password as string, user.password)
+        if (!valid) return null
+        return { id: user.id, email: user.email, name: user.name, image: user.image }
+      },
+    }),
   ],
   pages: {
     signIn: '/login',
@@ -100,15 +98,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.provider = account.provider
         token.accessToken = account.access_token
       }
-      if (user) {
-        token.id = user.id
-      }
+      if (user) token.id = user.id
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-      }
+      if (session.user) session.user.id = token.id as string
       return session
     },
   },
